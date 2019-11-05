@@ -1,0 +1,18 @@
+main(){
+	initialize_can();
+	initialize_ADC();
+	initialize_display();
+	while(1){
+		if(can_message_available()){
+			m = get_can_message();
+			update_display(m);
+		}
+		t = read_temperatures();
+		update_display(t);
+		if(temperature in t > threshhold){
+			send_can_message(ERROR_OVERHEAT);
+			update_display(ERROR);
+		}
+	}
+}
+	
