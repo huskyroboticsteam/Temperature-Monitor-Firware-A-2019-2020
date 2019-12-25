@@ -25,7 +25,9 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <compat/twi.h>
-#include "Arduino.h" // for digitalWrite
+
+#define true 1
+#define false 0
 
 #ifndef cbi
 #define cbi(sfr, bit) (_SFR_BYTE(sfr) &= ~_BV(bit))
@@ -35,8 +37,8 @@
 #define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 #endif
 
-#include "pins_arduino.h"
 #include "twi.h"
+#include "config.h"
 
 static volatile uint8_t twi_state;
 static volatile uint8_t twi_slarw;
@@ -73,8 +75,7 @@ void twi_init(void)
   twi_inRepStart = false;
   
   // activate internal pullups for twi.
-  digitalWrite(SDA, 1);
-  digitalWrite(SCL, 1);
+  PORTD |= 3;
 
   // initialize twi prescaler and bit rate
   cbi(TWSR, TWPS0);
@@ -102,8 +103,7 @@ void twi_disable(void)
   TWCR &= ~(_BV(TWEN) | _BV(TWIE) | _BV(TWEA));
 
   // deactivate internal pullups for twi.
-  digitalWrite(SDA, 0);
-  digitalWrite(SCL, 0);
+  PORTD &= ~3;
 }
 
 /* 
@@ -445,7 +445,6 @@ ISR(TWI_vect)
     case TW_MR_DATA_ACK: // data received, ack sent
       // put byte into buffer
       twi_masterBuffer[twi_masterBufferIndex++] = TWDR;
-      __attribute__ ((fallthrough));
     case TW_MR_SLA_ACK:  // address sent, ack received
       // ack if more bytes are expected, otherwise nack
       if(twi_masterBufferIndex < twi_masterBufferLength){
@@ -531,7 +530,6 @@ ISR(TWI_vect)
         twi_txBufferLength = 1;
         twi_txBuffer[0] = 0x00;
       }
-      __attribute__ ((fallthrough));		  
       // transmit first byte from buffer, fall
     case TW_ST_DATA_ACK: // byte sent, ack returned
       // copy data to output register
