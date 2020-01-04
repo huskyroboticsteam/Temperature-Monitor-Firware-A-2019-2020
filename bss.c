@@ -34,7 +34,7 @@ uint8_t detect_board(){
 */
 void do_board_specific_setup(uint8_t addr){
 		set_LED(3, 3);
-		set_Kp(120, 0);
+/*		set_Kp(120, 0);
 		set_Ki(20, 0);
 		set_Kd(170, 0);
 		switch(addr){
@@ -52,7 +52,7 @@ void do_board_specific_setup(uint8_t addr){
 				init_servo();
 				set_servo_position(0);
 				break;
-		}
+		}*/
 		#ifdef REV_2
 		tprintf("REV. 2 firmware\n");
 		#endif
@@ -66,7 +66,7 @@ void do_board_specific_setup(uint8_t addr){
 		}
 		#else
 		if(rev == 1){
-			tprintf("***WARNING*** Rev. 1 firmware on Rev. 2 board\n")
+			tprintf("***WARNING*** Rev. 1 firmware on Rev. 2 board\n");
 			set_LED(0, 3);
 			delay_mS(1000);
 		}
