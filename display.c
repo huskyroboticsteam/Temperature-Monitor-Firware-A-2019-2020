@@ -8,18 +8,18 @@ void i2c_write(uint8_t addr, uint8_t data, uint8_t stop){
 }
 
 void ssd1306_i2c_begin(){
-  i2c_write(0x3C, 0x00, 1);
+  i2c_write(0x3C, 0x00, 0);
   /*twi_writeTo(0x3C, )
   beginTransmission(0x3C);
   Wire.write((uint8_t)0x00);*/
 }
 
-void ssd1306_i2c_end(){
-  //Wire.endTransmission();
+void ssd1306_i2c_end(uint8_t b){
+    i2c_write(0x3C, b, 1);
 }
 
 void ssd1306_write(uint8_t b){
-  i2c_write(0x3C, b, 1);
+  i2c_write(0x3C, b, 0);
 }
 
 void ssd1306_init(){
@@ -55,17 +55,18 @@ void ssd1306_init(){
   ssd1306_write(0xA4);
   ssd1306_write(0xA6);
   ssd1306_write(0x2E);
-  ssd1306_write(0xAF);
- // ssd1306_i2c_end();
+  ssd1306_i2c_end(0xAF);
 }
 
 void ssd1306_update(){
+  ssd1306_i2c_begin();
   ssd1306_write(0x22);
   ssd1306_write(0x00);
   ssd1306_write(0xFF);
   ssd1306_write(0x21);
   ssd1306_write(0x00);
-  ssd1306_write(127);
+  //ssd1306_write(127);
+  ssd1306_i2c_end(127);
   i2c_write(0x3C, (uint8_t)0x40, 0);
 
   for(int i = 0;i < 1024;i++){
